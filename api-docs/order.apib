@@ -1,0 +1,325 @@
+# Group Hotel Order API 
+Our `Hotel Order` APIs allow you to create, retrieve, and manage orders for hotel bookings. By integrating with our `Hotel Order` APIs, you can perform the following functions:
+<ul style="list-style-type:disc;margin-left:18px"><li><em>Create Order</em>: Create an <@ product_order_popup @> for a hotel booking.</li><li><em>Update Order</em>: Update the order details for the hotel booking.</li><li><em>Get Order</em>: Retrieve the order status and order details for the hotel booking.</li><li><em>Confirm Order</em>: Update the order with confirmation details once the hotel booking is completed.</li><li><em>Cancel Order</em>: Update the order with cancellation details once the hotel cancellation is completed.</li><li><em>Set Payment Methods</em>: Update the payment methods used to pay for the hotel booking.</li><li><em>Set Reporting Fields</em>: Set reporting fields to store additional information related to the order.</li></ul>
+
+The following table lists the base URL and endpoints for the `Hotel Order` APIs:
+
+<table>
+<thead>
+    <tr>
+        <th width="25%">
+            API
+        </th>
+        <th width="5%">
+           Method
+        </th>
+        <th width="40%">
+           Base URL
+        </th>
+        <th width="30%">
+           Endpoint
+        </th>
+     </tr>
+     </thead>
+     <tbody>
+    <tr>
+        <td>
+            <a href="#createOrder">Create Order</a>
+        </td>
+        <td>
+            POST
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+            /hotel/v1.0/order
+        </td>
+        </tr>
+        <tr>
+        <td>
+            <a href="#updateOrder">Update Order</a>
+        </td>
+        <td>
+            PUT
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+            /hotel/v1.0/order/{id}
+        </td>
+        </tr>
+      <tr>
+        <td>
+            <a href="#getOrder">Get Order</a>
+        </td>
+        <td>
+            GET
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+           /hotel/v1.0/order/{id}
+        </td>
+        </tr>
+         <tr>
+        <td>
+            <a href="#confirmOrder">Confirm Order</a>
+        </td>
+        <td>
+            POST
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+           /hotel/v1.0/order/{id}/confirm
+        </td>
+        </tr>
+         <tr>
+        <td>
+            <a href="#cancelOrder">Cancel Order</a>
+        </td>
+        <td>
+            POST
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+           /hotel/v1.0/order/{id}/cancel
+        </td>
+        </tr>
+        <tr>
+        <td>
+            <a href="#cancelOrder">Set Payment Methods</a>
+        </td>
+        <td>
+            POST
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+           /hotel/v1.0/order/{id}/paymentMethods
+        </td>
+        </tr>
+        <tr>
+        <td>
+            <a href="#cancelOrder">Set Reporting Fields</a>
+        </td>
+        <td>
+            POST
+        </td>
+        <td>
+            https://hotel-order-service.stage.cnxloyalty.com
+        </td>
+        <td>
+           /hotel/v1.0/order/{id}/reportingFields
+        </td>
+        </tr>
+</tbody>
+</table>
+
+# API Workflow
+The Hotel Order API Workflow consists of the following main verbs, namely Create Order, Update Order, Get Order, Confirm Order, Cancel Order, Set Payment Methods, and Set Reporting Fields. The following diagram describes the Hotel Order API workflow:
+
+<image src="https://devcenter-common.s3.amazonaws.com/Hotel/Hotel_Order_API_Workflow_V9.0_16Mar2021.png" alt="Hotel Order API Workflow"><br><br>
+<em>Figure 1: Hotel Order API Workflow</em><br><br>
+As an API consumer, you must perform the following steps when a booking is initiated:<br>
+1. Create an <@ product_order_popup @> by using the `Create Order` API. 
+2. Optional: Call the `Update Order` API to update the order details such as the stay period, the payment options, or both. Note that this is an independant API, which can be called at any time after order creation. 
+3. Update payment methods using the `Set Payment Methods` API. 
+4. Initiate booking with the <@ supplier @>.<br>
+   The supplier returns the confirmation details for the booking. 
+5. Update the order with confirmation details by using the `Confirm Order` API. 
+6. Optional: Call the `Set Reporting Fields` API to store additional information for reporting purpose. For example, to store the booking token for accounting and booking reconciliation.  
+7. In case of cancellation, you must perform the following steps:<br>
+    a. Retrieve the order status and order details by using the `Get Order` API.<br>
+    b. Initiate cancellation with the supplier.<br>The supplier returns the cancellation details for the booking.<br>
+    c. Update the order with cancellation details by using the `Cancel Order` API.<br>
+    d. Optional: Call the `Set Reporting Fields` API to store additional information for reporting purpose. For example, to store the cancellation token for accounting and booking cancellation reconciliation.  
+
+# <a class="hide-parent" name="createOrder"></a>
+## Create Order [/hotel/v1.0/order]
+The `Create Order` API allows you to create a new <@ product_order_popup @> for each hotel booking.
+
+When you create an order using the `Create Order` API, the system generates an order ID and returns it in the API response. You can use the order ID to perform additional functions, such as to retrieve order details, and to update the confirmation and cancellation details for the order.  
+
+### Create Order [POST]
+    
++ Request createOrderReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+    
+    + Attributes (createOrderRequest)
+      
++ Response 200 (application/json)
+    + Attributes (createOrderResponse)
+
+# <a class="hide-parent" name="updateOrder"></a>
+## Update Order [/hotel/v1.0/order/{id}]
+The `Update Order` API allows you to update the order details. With this API, you can update the stay period and payment options. Depending on the order details that you want to update, you can provide either the `stayPeriod` object, `paymentOptions` array, or both in the API request.
+
+To update the order details, you must provide the order ID in the request URL. Note that this is an independant API which can be called at any time after order creation.  
+
+The API returns `200` HTTP status with an empty response body when the API call is successful. In case the API call fails, the API returns an appropriate error message with the HTTP status code. For more information, see <a href="../errors" target="_blank">Status and Error Codes</a>. 
+
+To view the order with the updated order details, you must call the `Get Order` API.
+
+### Update Order [PUT]
+
++ Parameters
+    + id: `123-456-789` (string, required) - Unique ID for the <@ product_order_popup @> for which you want to update order details. 
+    
++ Request updateOrderReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+    + Attributes (updateOrderReq)
+      
++ Response 200 (application/json)
+
+# <a class="hide-parent" name="getOrder"></a>
+## Get Order [/hotel/v1.0/order/{id}]
+The `Get Order` API allows you to retrieve the details of an existing <@ product_order_popup @>. With this API, you can view the order details with the updated order status for each hotel booking and take business decisions accordingly. For example, as an API consumer, you can use this API to retrieve the order details of the hotel booking before initiating cancellation with the supplier. 
+
+To retrieve the order details, you must provide the order ID in the request URL. 
+
+The API response returns the order details with the updated order status. 
+
+### Get Order [GET]
+
++ Parameters
+    + id: `123-456-789` (string, required) - Unique ID for the <@ product_order_popup @> for which you want to retrieve the order details. 
+    
++ Request getOrderReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+      
++ Response 200 (application/json)
+    + Attributes (getOrderResponse)
+
+# <a class="hide-parent" name="confirmOrder"></a>
+## Confirm Order [/hotel/v1.0/order/{id}/confirm]
+The `Confirm Order` API allows you to update the confirmation details for an existing <@ product_order_popup @>. For example, as an API consumer, you can use this API to update the order with confirmation details once the hotel booking is completed. 
+
+To update the order with confirmation details, you must provide the order ID in the request URL. 
+
+The API returns `200` HTTP status with an empty response body when the API call is successful. In case the API call fails, the API returns an appropriate error message with the HTTP status code. For more information, see <a href="../errors" target="_blank">Status and Error Codes</a>. 
+
+To view the order with the updated cancellation details, you must call the `Get Order` API.
+
+### Confirm Order [POST]
+
++ Parameters
+    + id: `123-456-789` (string, required) - Unique ID for the <@ product_order_popup @> for which you want to update the confirmation details. 
+    
++ Request confirmOrderReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+    + Attributes (confirmOrderReq)
+      
++ Response 200 (application/json)
+
+# <a class="hide-parent" name="cancelOrder"></a>
+## Cancel Order [/hotel/v1.0/order/{id}/cancel]
+The `Cancel Order` API allows you to update the cancellation details for an existing <@ product_order_popup @>. For example, as an API consumer, you can use this API to update the order with cancellation details once the hotel cancellation is completed. 
+
+To update the order with cancellation details, you must provide the order ID in the request URL. 
+
+When the API call is successful, the API returns `200` HTTP status with an empty response body. In case, the API call fails, the API returns an appropriate error message with the HTTP status code. For more information, see <a href="../errors" target="_blank">Status and Error Codes</a>.  
+
+To view the order with the updated cancellation details, you must call the `Get Order` API.
+
+### Cancel Order [POST]
+
++ Parameters
+    + id: `123-456-789` (string, required) - Unique ID for the <@ product_order_popup @> for which you want to update the cancellation details. 
+    
++ Request cancelOrderReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+    + Attributes (cancelOrderReq)
+      
++ Response 200 (application/json)
+
+# <a class="hide-parent" name="paymentAPI"></a>
+## Set Payment Methods [/hotel/v1.0/order/{id}/paymentMethods]
+The `Set Payment Methods` API allows you to update a new payment method for an existing <@ product_order_popup @>. 
+
+To set a new payment method, you must provide the order ID in the request URL. 
+
+When the API call is successful, the API returns `200` HTTP status with an empty response body. In case the API call fails, the API returns an appropriate error message with the HTTP status code. For more information, see <a href="../errors" target="_blank">Status and Error Codes</a>.  
+
+To view the order with the updated payment methods, you can call the `Get Order` API. The updated payment method information is returned within the `/paymentMethods` array in the API response. Note that the `/paymentMethods` array returns the list of all the payment methods including those specified at the time order creation.
+
+### Set Payment Methods [POST]
+
++ Parameters
+    + id: `123-456-789` (string, required) - Unique ID for the <@ product_order_popup @> for which you want to update the payment methods. 
+
++ Request paymentMethodReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+    + Attributes (paymentMethodReq)
+
++ Response 200 (application/json)
+
+# <a class="hide-parent" name="setReportingInfo"></a>
+## Set Reporting Fields [/hotel/v1.0/order/{id}/reportingFields]
+The `Set Reporting Fields` API allows you to store additional information for an existing <@ product_order_popup @>. For example, you can pass the booking token in a reporting field for accounting and booking reconciliation. You can also use this API to update the values of the reporting fields specified at the time of order creation. Note that you can set upto ten reporting fields.
+
+To set a new reporting field, you must provide the order ID in the request URL. 
+
+When the API call is successful, the API returns `200` HTTP status with an empty response body. In case the API call fails, the API returns an appropriate error message with the HTTP status code. For more information, see <a href="../errors" target="_blank">Status and Error Codes</a>.  
+
+To view the order with the updated reporting field, you can call the `Get Order` API. The updated reporting fields are returned within the `/reportingFields` object in the API response. 
+
+### Set Reporting Fields [POST]
+
++ Parameters
+    + id: `123-456-789` (string, required) - Unique ID for the <@ product_order_popup @> for which you want to set new reporting fields or update the existing reporting field values. 
+    
++ Request setReportingReq (application/json)
+
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: hotel-stage-doc-497c-b2e5-2e40b26a9bc2@@description: Unique ID that is used to track API calls made in the same session. It is recommended that, as an ORXe API consumer, you generate the correlation ID for the first API call in a session and use the same ID for all subsequent calls during the current session. If you encounter any issue in your API calls, you must provide this ID to our support executive.
+      cnx-tenantid: 2ql3bti6juo
+      cnx-userip: 127.0.0.1
+      Accept-Encoding: gzip, deflate
+    + Attributes (setReportingReq)
+      
++ Response 200 (application/json)
