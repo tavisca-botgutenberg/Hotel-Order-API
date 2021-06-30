@@ -1,0 +1,4 @@
+GIT_OWNER=tavisca-botgutenberg
+        GIT_REPO_NAME=Hotel-Order-API
+        GIT_BRANCH=master
+        ROOT_PATH=api-docs
