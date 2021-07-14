@@ -1,7 +1,4 @@
 ## updateOrderReq
-+ include paymentOptionsEOReq
 + include stayPeriod
-
-## paymentOptionsEOReq
 + paymentOptions (array [paymentOptions], fixed-type) - Contains the list of selected payment options that the customer wants to avail to pay for the room.<br><br>
 <b>Notes:</b><ul style="list-style-type:disc"><li>In case of hotel bookings, you can only provide one payment option within the `/paymentOptions` array.</li><li>Depending on the selected reward, either the amount in cash, points, or a combination of both the amount in cash and points must be provided within the `/paymentOptions` array.</li><li>If updated, you can view the new payment options in the `selectedPaymentOptions` array in the `Get Order` API response.</li></ul>
