@@ -1,0 +1,5 @@
+# Data Structures
+
+## paymentOptions
++ cash: 100.00 (number) - Contains information about the amount in cash that the <@ customer_popup @> must pay to book the room.<br><br><b>Format:</b> Decimal
++ points: 2000.00 (number) - Contains information about the number of points that the <@ customer_popup @> must redeem to book the room.<br><br><b>Format:</b> Decimal
