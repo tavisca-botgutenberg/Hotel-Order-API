@@ -1,0 +1,20 @@
+# applypaymentOptions
+## Apply Payment Options [/api/cart/v2.0/{cartId}/paymentoptions/apply]
+The `Apply Payment Options` API allows you to apply the selected payment options for an item in the cart. You can also use this API to update the selected payment options that is provided for an item in the earlier API calls, such as <a href="../create#createcartwithitemapi" target="_blank">Create Cart with an Item</a> and <a href="../manage#addtocartapi" target="_blank">Add to Cart</a> APIs.
+You must provide the ID of the cart, to which you want to apply or update the payment options, in the request URL. Also, you must provide the ID of the item, along with the payment options for the item, in the request.
+<b>Note:</b> If you do not provide the payment options for an item at the time of the <a href="../create#createcartwithitemapi" target="_blank">Create Cart with an Item</a> API or `Add to Cart` API call, then you must apply the payment options for the item, prior to check out, by using the `Apply Payment Options` API. 
+### Apply Payment Options [PUT]
++ Parameters
+    + cartId: `aa0123aa-12z3-1234-8f12-1236374qwz1` - Unique ID for the <@ cart_popup @> to which you want to apply the payment options. 
++ Request applyPaymentOptions (application/json)
+    + Headers
+      Content-Type: application/json
+      cnx-correlationid: d2e6d580-8b42-4721-a408-c3daed984c50
+      cnx-tenantid: 3smlq291nuo
+      cnx-userip: 127.0.0.1
+      cnx-environment-token: T3
+      Accept-Encoding: gzip, deflate
+      Accept-Language: en-US
+    + Attributes (applyPaymentOptionsRequest)
++ Response 200 (application/json)    
+    + Attributes (applyPaymentOptionsResp)
