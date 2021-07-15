@@ -1,0 +1,100 @@
+## searchQueryRadialInfo
++ include roomOccupanciesreq
++ include stayPeriodinfo
++ filters (filters, optional) - Contains <@ filters_body @> to narrow down the hotel search results. The search results include only those hotels that match all the filter criteria specified. Note that all hotel content attributes, such as the hotel's <@ amenitiessmall @> and <@ starrating @>, are obtained from the content provider.
++ include travellerCountryCodeOfResidence
++ include travellerNationalityCode
++ bounds (boundsRadial, required) - Contains information about the region where the customer wants to search for hotels.
++ include includeHotelsWithoutRates
++ include relevanceCriteria
+
+## roomOccupanciesreq
++ roomOccupancy (occupants, required) - Contains the list of  room occupancy objects that contain the `occupants` information for the room. You can search for hotels that can accommodate up to 8 guests in a room (occupancy) in one single call. This limitation can vary per <@ supplier @>. Note that there must be at least one adult per room.
+
+## occupants (object)
++ occupants (array [occupantInfo], fixed-type, required) - Contains the list of information for each guest in a room. You can search for hotels that can accommodate up to 8 guests in a room (occupancy). This limitation can vary per <@ supplier @>. Note that there must be at least one adult per room.<br><br>For example, if you are searching for a room with 2 guests, namely guest1 and guest2, the `occupants` array will contain two objects. The first object will contain the type and age for guest1 and the second object will contain the type and age for guest2.
+
+## occupantInfo (object)
++ type (enum, required) - Type of guest. Note that there must be at least one adult per room.
+  + Adult
+  + Child
++ age: 25 (number) - Age of the guest. The age must be provided for a child guest. A child guest's age must be between `0` and `18`. The age is optional for an adult guest. An adult guest's age must be between `0` and `120`. Note that the age limitations are country-specific.
+
+## stayPeriodinfo
++ stayPeriod (stayPeriod, required) - Contains information about when the guest wants to check in and check out of the hotel. This indicates the complete hotel stay duration. The total `stayPeriod` must be less than or equal to 90 days. Note that the stay period limitation is supplier-specific.
+
+## stayPeriod (object)
++ start: `{date|YYYY-MM-DD|30}` (string, required) - Check-in date or the start date of the stay duration. The API supports same-day searches to accommodate different time zones. You can check for availability only up to 330 days in advance. Note that the availability limitation is supplier-specific. <br><br>Format: YYYY-MM-DD
++ end: `{date|YYYY-MM-DD|33}` (string, required) - Check-out date or the end date of the stay duration. The `end` date must be later than the `start` date.<br><br><b>Format:</b> YYYY-MM-DD
+
+## travellerCountryCodeOfResidence
++ travellerCountryCodeOfResidence: US (string, optional, nullable) - 2-character ISO code that indicates the traveler's country of residence. At times, this information is required by hotels that have a restriction on the guest's country of residence.<br><br><b>Notes:</b><ul style="list-style-type:disc"><li>This is an optional field.</li><li>If you want to provide the `travellerCountryCodeOfResidence` in the request, you must provide a valid <a href="../reference-reads#countrycodes">2-character ISO country code</a> or set the field to `null` without the quotation marks ("").</li></ul>
+
+## travellerNationalityCode
++ travellerNationalityCode: US (string, optional, nullable) - 2-character ISO code that indicates the traveler's nationality. In recent trends, some suppliers now require the traveler's nationality, which could be for business reasons, such as better pricing based on locals vs tourists.<br><br><b>Notes:</b><ul style="list-style-type:disc"><li>This is an optional field.</li><li>If you want to provide the `travellerNationalityCode` in the request, you must provide a valid <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">2-character ISO country code</a> or set the field to `null` without the quotation marks ("").</li></ul>
+
+## boundsRadial (object)
++ circle (object, required) - Contains the geographic coordinates of the center point and the radius within which you want to search for hotels.
+    + center (object, required) - Contains the latitude and longitude coordinates of the given point from which the radius is calculated to determine the area to search for hotels.<br><br>For example, if you want to search for hotels within a 50 km radius from the CDG airport (Paris Charles de Gaulle Airport), the CDG airport is your center.
+        + lat: `48.85667` (number, required) - Latitude coordinate of the center point. The `lat` value must be between `-90` and `+90`.<br><br>For example, the lat value for the CDG (Paris Charles de Gaulle Airport) airport is `49.0097`.<br><br><b>Format:</b> Decimal
+        + long: `2.350987` (number, required) - Longitude coordinate of the center point. The `long` value must be between `-180` and `+180`.<br><br>For example, the long value for the CDG (Paris Charles de Gaulle Airport) airport is `2.5479`.<br><br><b>Format:</b> Decimal
+    + radiusKm: 50.5 (number, required) - Distance, in kilometers, from the center point that you want to consider in the search area. The `radiusKm` value must be between `1` and `100`.<br><br>For example, if you want to search within a 50-kilometer radius from the CDG (Paris Charles de Gaulle Airport) airport set the `radiusKm` field to `50.5`.<br><br><b>Format:</b> Decimal    
++ include countryCodeBounds
+
+## countryCodeBounds
++ countryCode: `US` (string) - Includes hotel inventory and rates from suppliers that are configured for the country (<a target="_blank" href="../reference-reads#countrycodes">2-character ISO country code</a>) specified in this field. This field is specifically useful when you want to retrieve hotel inventory and rates from region-based suppliers.<br><br><b>Note:</b> If you do not provide this field, the hotel inventory is retrieved from the suppliers that are set in your default account configuration.   
+
+## includeHotelsWithoutRates 
++ includeHotelsWithoutRates: false (boolean) - Indicates whether you want to search only for those hotels that have the availability or room rate information available from the supplier. If you set the `includeHotelsWithoutRates` field to `true`, the search results include hotels regardless of the availability or room rate information.<br><br><b>Note:</b> If you do not provide this field, at the time of search, then the `includeHotelsWithoutRates` field is set to `false`.
+
+## relevanceCriteria
++ relevanceCriteria (array [relevanceCriteriaInfo], fixed-type) - Contains information about the relevance criteria that is used for calculating the <@ recommendation_score_small_popup @>. Consider a scenario where you want to search for hotels in Paris and you set the relevance criteria to `Fontainebleau`, based on city. In this case, the recommendation score of the hotels located in Fontainebleau is weighted higher than that of the hotels located in Paris. 
+## relevanceCriteriaInfo
++ keyword: `Buenos Aires` (string, required) - The keyword based on which the <@ recommendation_score_small_popup @> is calculated.
++ type: City (enum, required) - Type of relevance criteria used for calculating <@ recommendation_score_small_popup @>. At present, ORXe APIs for Hotel only supports relevance by city.
+  + City
+
+## filters (object)
++ hotelChains: `2809` (array, optional, nullable) - Include only those hotels that belong to the list of <@ hotelchain @> specified in this field. To apply this filter, you must specify the hotel chain code in the `hotelChains` array. If you do not know the hotel chain code for a hotel chain, please contact cxLoyalty Business Team.<br><br><b>Notes:</b><ul style="list-style-type:disc"><li>Users can filter search results based on <@ hotelchain @> to view only those hotels that belong to their preferred hotel chain. This preference can be based on the quality of service, cost, membership (loyalty), or deals (offers) that are available with a specific chain of hotels.</li><li>This is a case-insensitive, exact match filter. This means that setting the `hotelChains` field to `ACME Hotel Chains` or `ACME hotel chains` will return the same set of hotels that belong to this <@ hotelchain @>.</li><li>If the <@ hotelchain @> information for a hotel is not available from the content provider, the hotel is filtered out from the hotel search results.</li></ul>
++ allowedCountry: `FR` (string, optional, nullable) - Include only those hotels that belong to the country (<a target="_blank" href="../reference-reads#countrycodes">2-character ISO country code</a>) specified in this field. This filter is used when the specified radial or rectangular search region spreads different countries and you want to restrict the results to only one specific country. <br><br>Consider a scenario where the georegion provided in the search criteria is located close to a country's borderline and the radius or the rectangular georegion spans two countries, such as `France` and `Belgium`. In this scenario, if you want to restrict the results to `France`, you must set the `allowedCountry` field value to `FR`.
++ include hotelNames 
++ include hotelIds
++ include mapPriceSearch
++ include mapHotelRatingSearch
++ include hotelBrands
++ include mapHotelAmenities
++ include tripAdvisorRatingSearch
++ include offersFilter
++ include neighborhoodsFilter
+
+## hotelNames 
++ hotelNames: `Hotel Aulivia Opera` (array, fixed-type) - Include only those hotels whose hotel name is same as specified in this field. 
+
+## hotelIds
++ hotelIds: `13652` (array, fixed-type) - Include only those hotels whose `hotelId` is specified in this field. 
+
+## mapPriceSearch
++ price (mapPriceInfoSearch) - Include only those hotels whose room rate is equal to or higher than the rate specified in the `minPrice` field and equal to or lower than the rate specified in the `maxPrice` field. The `price` filter allows users to see only those hotels that are within the specified price range.<br><br>Consider a scenario where ACME Hotel's room rate is 98, Wayne Hotel's room rate is 100, and Stark Hotel's room rate is 250. If you set the `minPrice` field to `90` and the `maxPrice` field to `200`, then the search results include `ACME Hotel` and `Wayne Hotel`. The `Stark Hotel` is not included as its room rate, 250, is higher than the `maxHotelPrice` specified.
+
+## mapHotelRatingSearch
++ rating: `4`, `5` (array, fixed-type) - Include only those hotels whose <@ starrating @> is equal to the rating specified in this field. The `rating` value must be between `1` and `5`. The hotel star rating information is obtained from the content provider.<br><br>If you set the `rating` field to `3`, then the search results include hotels whose rating is between `3.0` and `3.9`.<br><br><b>Notes:</b><ul style="list-style-type:disc"><li>The hotel rating typically indicates the quality of service at the hotel.</li><li>If the `rating` specified is lower than `1` or higher than `5`, the response returns an error.</li><li>The value for this field must not be a decimal.</li></ul>
+
+## hotelBrands 
++ hotelBrands: `4940` (array, optional, nullable) - Include only those hotels that belong to the list of <@ hotel_brand_popup @> specified in this field. To apply this filter, you must specify the hotel brand code in the `hotelBrands` array. If you do not know the hotel brand code for a hotel brand, please contact cxLoyalty Business Team.<br><br><b>Notes:</b><ul style="list-style-type:disc"><li>Users can filter search results based on hotel brands to view only those hotels that belong to their preferred hotel brand.</li><li>This is a case-insensitive, exact match filter. This means that setting the `hotelBrands` field to `Novotel` or `novotel` will return the same set of hotels that belong to this hotel brand.</li><li>If the hotel brand information for a hotel is not available from the content provider, the hotel is filtered out from the hotel search results.</li></ul>
+
+## mapHotelAmenities
++ amenities: `28` (array, fixed-type) - Include only those hotels which provide the <@ amenitiessmall @> specified in this field. The `amenities` filter allows users to see only those hotels that provide the amenities of their choice.<br><br> You must provide the master amenity ID of the amenity that are supported by the `amenities` filter. To know the amenities supported by the amenities filter, <a href="../reference-reads#masterAmenities" target="_blank">see the list of supported master amenities</a>. 
+
+## tripAdvisorRatingSearch
++ tripAdvisorRating: `4`, `5` (array, fixed-type) - Include only those hotels whose TripAdvisor&reg; rating is equal to the TripAdvisor&reg; rating specified in this field. The `tripAdvisorRating` field value must be between 1 and 5. This rating information is obtained from the <a target="_blank" href="http://www.tripadvisor.com/">TripAdvisor&reg;</a>.<br><br>If you set the `tripAdvisorRating` field to `3`, then the search results include hotels whose TripAdvisor&reg; rating is between `3.0` and `3.9`.
+
+## offersFilter 
++ offers (offerFilterData) - Includes only those hotels that match the filter criteria specified for offers.
+## offerFilterData 
++ includeHotels (enum) - Indicates whether you want the search results to return hotels with offers, without offers, or all.<br><br><b>Notes:</b><ul style="list-style-type:disc"><li>By default, the `includeHotels` field is set to `All`. This means that hotels that provide offers as well as those which do not provide any offer are returned in the search results.</li><li>If the `includeHotels` field is set to `WithOffers`, only hotels that provide offers are returned in the search results.</li><li>If the `includeHotels` field is set to `WithoutOffers`, only hotels that do not provide any offer are returned in the search results.</li></ul>
+  + All
+  + WithOffers  
+  + WithoutOffers 
+ 
+## neighborhoodsFilter
++ neighborhoods: `315430` (array, fixed-type) - Includes only those hotels that are located in the neighborhoods specified in this field. To apply this filter, you must specify the location ID of the neighborhood in the `neighborhoods` array. If you do not know the location ID, please contact cxLoyalty Business Team.
